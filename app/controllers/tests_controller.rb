@@ -1,11 +1,12 @@
 class TestsController < Simpler::Controller
-
   def index
     @time = Time.now
   end
 
-  def create
-
+  def show
+    @time = Time.now
+    @resource_id = params[:id]
   end
 
+  def create; end
 end
