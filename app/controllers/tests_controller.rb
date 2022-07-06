@@ -4,8 +4,7 @@ class TestsController < Simpler::Controller
   end
 
   def show
-    @time = Time.now
-    @resource_id = params[:id]
+    render plain: "Show test with id: #{params[:id]}"
   end
 
   def create; end

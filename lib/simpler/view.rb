@@ -1,9 +1,9 @@
 require 'erb'
 
 module Simpler
-  class View
-    VIEW_BASE_PATH = 'app/views'.freeze
+  VIEW_BASE_PATH = 'app/views'.freeze
 
+  class View
     def initialize(env)
       @env = env
     end

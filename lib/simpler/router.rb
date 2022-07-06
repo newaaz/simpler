@@ -20,8 +20,8 @@ module Simpler
       env['simpler.params'] ||= {}
 
       if contain_ids?(path)
-        param_id = path.scan(/\d+/)[0].to_i
-        env['simpler.params'].merge!(id: param_id)
+        params_id = path.scan(/\d+/)[0].to_i
+        env['simpler.params'].merge!(id: params_id)
 
         path.gsub!(/\d+/, ":id")
       end

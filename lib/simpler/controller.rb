@@ -16,16 +16,38 @@ module Simpler
       @request.env['simpler.controller'] = self
       @request.env['simpler.action'] = action
 
-      send(action)
-
       set_default_headers
+      send(action)
+      write_response
       set_headers
 
-      write_response
       @response.finish
     end
 
     private
+
+    def render(template)
+      if template.is_a?(Hash) && template.key?(:plain)
+        render_plain(template[:plain])
+      else
+        @request.env['simpler.template'] = template
+      end
+    end
+
+    def render_plain(text)
+      @request.env['simpler.response_plain'] = text
+      @headers['Content-Type'] = 'text/plain'
+    end
+
+    def write_response
+      body = @request.env['simpler.response_plain'].nil? ? render_body : @request.env['simpler.response_plain']
+
+      @response.write(body)
+    end
+
+    def render_body
+      View.new(@request.env).render(binding)
+    end
 
     def extract_name
       self.class.name.match('(?<name>.+)Controller')[:name].downcase
@@ -43,22 +65,8 @@ module Simpler
       @response.status = status
     end
 
-    def write_response
-      body = render_body
-
-      @response.write(body)
-    end
-
-    def render_body
-      View.new(@request.env).render(binding)
-    end
-
     def params
-      @request.params.merge(@request.env['simpler.params'])
-    end
-
-    def render(template)
-      @request.env['simpler.template'] = template
+      @request.params.merge @request.env['simpler.params']
     end
   end
 end
