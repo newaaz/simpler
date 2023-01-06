@@ -2,7 +2,6 @@ require_relative 'router/route'
 
 module Simpler
   class Router
-
     def initialize
       @routes = []
     end
@@ -18,11 +17,23 @@ module Simpler
     def route_for(env)
       method = env['REQUEST_METHOD'].downcase.to_sym
       path = env['PATH_INFO']
+      env['simpler.params'] ||= {}
+
+      if contain_ids?(path)
+        params_id = path.scan(/\d+/)[0].to_i
+        env['simpler.params'].merge!(id: params_id)
+
+        path.gsub!(/\d+/, ":id")
+      end
 
       @routes.find { |route| route.match?(method, path) }
     end
 
     private
+
+    def contain_ids?(path)
+      path.scan(/\d+/).any?
+    end
 
     def add_route(method, path, route_point)
       route_point = route_point.split('#')
@@ -36,6 +47,5 @@ module Simpler
     def controller_from_string(controller_name)
       Object.const_get("#{controller_name.capitalize}Controller")
     end
-
   end
 end
